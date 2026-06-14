@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RV32I Simulator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="app">
+
+  <header id="header">
+    <span id="logo">RV32I Simulator</span>
+
+    <div id="tab-nav">
+      <button class="tab active" id="tabEditor">Editor</button>
+      <button class="tab" id="tabSimulator">Simulator</button>
+    </div>
+
+    <div id="controls">
+      <select id="exampleSelect">
+        <option value="">Load Example...</option>
+        <option value="basic_arithmetic">Basic Arithmetic</option>
+        <option value="immediate_ops">Immediate Ops</option>
+        <option value="memory_ops">Memory Load &amp; Store</option>
+        <option value="branching_loop">Branching Loop</option>
+        <option value="mixed_program">Fibonacci</option>
+      </select>
+      <button id="parseBtn">Parse</button>
+      <button id="assembleBtn" class="btn-run">Assemble &amp; Run</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+  </header>
+
+  <div id="status-bar">
+    <span id="statusText">Ready</span>
+  </div>
+
+  <!-- EDITOR TAB -->
+  <div id="view-editor" class="view active">
+    <div id="editor-col">
+      <div class="col-header">Assembly Editor</div>
+      <div id="editor-wrap">
+        <div id="gutter"></div>
+        <textarea id="editor" spellcheck="false" autocomplete="off" autocorrect="off"></textarea>
+      </div>
+    </div>
+
+    <div id="decode-col">
+      <div class="col-header">Parsed Instructions</div>
+      <div id="decode-output">
+        <p class="placeholder">Press Parse to decode instructions.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIMULATOR TAB -->
+  <div id="view-simulator" class="view">
+
+    <div id="sim-controls">
+      <button class="sim-btn" id="prevBtn" disabled>&#9664; Prev</button>
+      <button class="sim-btn" id="nextBtn" disabled>Next &#9654;</button>
+      <input type="range" id="scrubber" min="0" max="0" value="0" disabled />
+      <span id="stepInfo">—</span>
+    </div>
+
+    <div id="sim-body">
+
+      <!-- Registers -->
+      <div class="sim-panel" id="reg-panel">
+        <div class="col-header">Registers</div>
+        <div class="panel-scroll">
+          <table id="regTable">
+            <thead>
+              <tr><th>Name</th><th>ABI</th><th>Value</th><th>Hex</th></tr>
+            </thead>
+            <tbody id="regBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Execution trace -->
+      <div class="sim-panel" id="trace-panel">
+        <div class="col-header">Execution Trace</div>
+        <div class="panel-scroll" id="traceScroll">
+          <p class="placeholder" id="traceEmpty">No simulation loaded.</p>
+        </div>
+      </div>
+
+      <!-- Memory -->
+      <div class="sim-panel" id="mem-panel">
+        <div class="col-header">Memory</div>
+        <div class="panel-scroll">
+          <p class="placeholder" id="memEmpty">No memory writes yet.</p>
+          <table id="memTable" style="display:none">
+            <thead>
+              <tr><th>Address</th><th>Value</th><th>Hex</th></tr>
+            </thead>
+            <tbody id="memBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
