@@ -107,7 +107,6 @@ const memTable     = document.getElementById('memTable');
 const memEmpty     = document.getElementById('memEmpty');
 const prevBtn      = document.getElementById('prevBtn');
 const nextBtn      = document.getElementById('nextBtn');
-const scrubber     = document.getElementById('scrubber');
 const stepInfo     = document.getElementById('stepInfo');
 const statusText   = document.getElementById('statusText');
 
@@ -207,7 +206,6 @@ function resetSim() {
   memTable.style.display = 'none';
   memEmpty.style.display = '';
   navEnable(false);
-  scrubber.value = 0;
   stepInfo.textContent = '—';
   setStatus('Reset', '');
 }
@@ -237,9 +235,6 @@ function renderTrace(steps) {
     frag.appendChild(row);
   });
   traceScroll.appendChild(frag);
-  scrubber.min   = 0;
-  scrubber.max   = steps.length - 1;
-  scrubber.value = 0;
   navEnable(true);
 }
 
@@ -258,7 +253,6 @@ function jumpToStep(idx) {
   prevRegs = prevStep ? prevStep.registers : new Array(32).fill(0);
   buildRegTable(step.registers);
   renderMemory(step.memory);
-  scrubber.value       = idx;
   stepInfo.textContent = `Step ${idx + 1} / ${simResult.steps.length}`;
   prevBtn.disabled     = idx === 0;
   nextBtn.disabled     = idx === simResult.steps.length - 1;
@@ -307,7 +301,6 @@ function renderMemory(memMap) {
 function navEnable(on) {
   prevBtn.disabled  = !on;
   nextBtn.disabled  = !on;
-  scrubber.disabled = !on;
 }
 
 function setStatus(msg, type) {
@@ -325,7 +318,6 @@ assembleBtn.addEventListener('click', assembleAndRun);
 resetBtn.addEventListener('click',    resetSim);
 prevBtn.addEventListener('click',     () => jumpToStep(currentStep - 1));
 nextBtn.addEventListener('click',     () => jumpToStep(currentStep + 1));
-scrubber.addEventListener('input',    () => jumpToStep(+scrubber.value));
 
 exampleSel.addEventListener('change', () => {
   const v = exampleSel.value;

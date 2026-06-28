@@ -126,6 +126,7 @@ public class InstructionExecutor {
         step.setDescription(String.format("jalr: x%d = %d, PC → %d", i.getRd(), nextPc, targetPc));
     }
 
+
     private void executeSB(String mnemonic, Instruction i, CpuState s, ExecutionStep step) {
         int rs1Val = s.getRegister(i.getRs1());
         int rs2Val = s.getRegister(i.getRs2());

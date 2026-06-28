@@ -239,11 +239,7 @@ button:disabled { opacity: .4; cursor: default; }
 
 .sim-btn { padding: 2px 10px; font-size: 12px; }
 
-#scrubber {
-  flex: 1;
-  max-width: 400px;
-  accent-color: var(--accent);
-}
+
 
 #stepInfo {
   font-family: var(--mono);

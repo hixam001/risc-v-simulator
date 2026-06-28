@@ -137,13 +137,12 @@ public class AssemblyParser {
     // Tokens after normalisation: [mnemonic, rs2, imm, rs1] — rs2 packed into rd field
     private Instruction decodeStore(int lineNum, String raw, String mnemonic, String[] tokens) {
         requireTokens(lineNum, tokens, 4);
-        return new Instruction(lineNum, raw, mnemonic, "I",
+        return new Instruction(lineNum, raw, mnemonic, "S",
                 parseRegister(lineNum, tokens[1]),  // rs2 → rd slot
                 parseRegister(lineNum, tokens[3]),
                 0, parseImmediate(lineNum, tokens[2]));
     }
 
-    // Supports both jalr rd, imm(rs1) and jalr rd, rs1, imm
     private Instruction decodeJalr(int lineNum, String raw, String mnemonic, String[] tokens) {
         requireTokens(lineNum, tokens, 4);
         int rd = parseRegister(lineNum, tokens[1]);
