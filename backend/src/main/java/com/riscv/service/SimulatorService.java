@@ -39,11 +39,11 @@ public class SimulatorService {
         List<ExecutionStep> steps = new ArrayList<>();
         int stepNumber = 1;
 
-        while (state.getPc() < instructions.size() && stepNumber <= MAX_STEPS) {
+        while (state.getPc() < instructions.size() * 4 && stepNumber <= MAX_STEPS) {
             int pc = state.getPc();
             ExecutionStep step = new ExecutionStep(
-                    stepNumber, pc, instructions.get(pc).getRaw(), "", null, null, null, null);
-            executor.execute(instructions.get(pc), state, step);
+                    stepNumber, pc, instructions.get(pc / 4).getRaw(), "", null, null, null, null);
+            executor.execute(instructions.get(pc / 4), state, step);
             steps.add(step);
             stepNumber++;
         }
@@ -51,7 +51,7 @@ public class SimulatorService {
         boolean success     = true;
         String errorMessage = null;
 
-        if (stepNumber > MAX_STEPS && state.getPc() < instructions.size()) {
+        if (stepNumber > MAX_STEPS && state.getPc() < instructions.size() * 4) {
             success      = false;
             errorMessage = "Execution halted: step limit of " + MAX_STEPS + " reached. "
                          + "Your program may contain an infinite loop.";

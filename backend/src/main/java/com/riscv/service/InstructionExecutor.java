@@ -46,7 +46,7 @@ public class InstructionExecutor {
         };
 
         s.setRegister(i.getRd(), result);
-        s.setPc(s.getPc() + 1);
+        s.setPc(s.getPc() + 4);
         step.setDescription(String.format("x%d = x%d %s x%d = %d",
                 i.getRd(), i.getRs1(), opSymbol(mnemonic), i.getRs2(), result));
     }
@@ -79,7 +79,7 @@ public class InstructionExecutor {
         };
 
         s.setRegister(i.getRd(), result);
-        s.setPc(s.getPc() + 1);
+        s.setPc(s.getPc() + 4);
         step.setDescription(String.format("x%d = x%d %s %d = %d",
                 i.getRd(), i.getRs1(), mnemonic, imm, result));
     }
@@ -96,7 +96,7 @@ public class InstructionExecutor {
         };
 
         s.setRegister(i.getRd(), result);
-        s.setPc(s.getPc() + 1);
+        s.setPc(s.getPc() + 4);
         step.setDescription(String.format("x%d = mem[x%d + %d] = 0x%08X",
                 i.getRd(), i.getRs1(), i.getImm(), result));
     }
@@ -112,18 +112,18 @@ public class InstructionExecutor {
             default   -> throw new IllegalArgumentException("Unknown store mnemonic: " + mnemonic);
         }
 
-        s.setPc(s.getPc() + 1);
+        s.setPc(s.getPc() + 4);
         step.setDescription(String.format("mem[x%d + %d] = x%d = 0x%08X",
                 i.getRs1(), i.getImm(), i.getRd(), srcVal));
     }
 
     private void executeJalr(Instruction i, CpuState s, ExecutionStep step) {
-        int nextPc   = s.getPc() + 1;
-        int targetPc = (s.getRegister(i.getRs1()) + i.getImm()) >> 2; // byte addr → instruction index
+        int nextPc   = s.getPc() + 4;                             // return address (byte)
+        int targetPc = (s.getRegister(i.getRs1()) + i.getImm()) & ~1; // byte target, LSB cleared per spec
 
         s.setRegister(i.getRd(), nextPc);
         s.setPc(targetPc);
-        step.setDescription(String.format("jalr: x%d = %d, PC → %d", i.getRd(), nextPc, targetPc));
+        step.setDescription(String.format("jalr: x%d = 0x%X, PC → 0x%X", i.getRd(), nextPc, targetPc));
     }
 
 
@@ -144,12 +144,12 @@ public class InstructionExecutor {
         step.setBranchTaken(taken);
 
         if (taken) {
-            int targetPc = s.getPc() + i.getImm();
+            int targetPc = s.getPc() + i.getImm(); // imm is already a byte offset
             s.setPc(targetPc);
-            step.setDescription(String.format("%s: x%d=%d, x%d=%d → branch TAKEN (target PC=%d)",
+            step.setDescription(String.format("%s: x%d=%d, x%d=%d → branch TAKEN (PC=0x%X)",
                     mnemonic, i.getRs1(), rs1Val, i.getRs2(), rs2Val, targetPc));
         } else {
-            s.setPc(s.getPc() + 1);
+            s.setPc(s.getPc() + 4);
             step.setDescription(String.format("%s: x%d=%d, x%d=%d → branch NOT TAKEN",
                     mnemonic, i.getRs1(), rs1Val, i.getRs2(), rs2Val));
         }

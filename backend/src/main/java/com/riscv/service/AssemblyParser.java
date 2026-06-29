@@ -166,11 +166,11 @@ public class AssemblyParser {
                 resolveBranchTarget(lineNum, tokens[3], labelMap, currentIndex));
     }
 
-    // Branch target: label name → instruction-index offset, or byte offset ÷ 4
+    // Branch target: label name → byte offset, or raw byte offset literal (per RV32I spec)
     private int resolveBranchTarget(int lineNum, String target,
                                     Map<String, Integer> labelMap, int currentIndex) {
-        if (labelMap.containsKey(target)) return labelMap.get(target) - currentIndex;
-        return parseImmediate(lineNum, target) / 4;
+        if (labelMap.containsKey(target)) return (labelMap.get(target) - currentIndex) * 4;
+        return parseImmediate(lineNum, target); // caller already provides a byte offset
     }
 
     private int parseRegister(int lineNum, String token) {

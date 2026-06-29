@@ -228,7 +228,7 @@ function renderTrace(steps) {
     if (s.error)                 row.classList.add('has-error');
     row.innerHTML =
       `<span class="tr-num">#${s.stepNumber}</span>` +
-      `<span class="tr-pc">PC:${s.pc}</span>` +
+      `<span class="tr-pc">0x${s.pc.toString(16).padStart(4,'0').toUpperCase()}</span>` +
       `<span class="tr-body">${esc(s.instruction || '')}</span>` +
       `<span class="tr-desc">${s.error ? '⚠ ' + esc(s.error) : esc(s.description)}</span>`;
     row.addEventListener('click', () => jumpToStep(i));
