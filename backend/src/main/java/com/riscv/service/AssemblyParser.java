@@ -27,9 +27,9 @@ public class AssemblyParser {
 
     private static final Set<String> R_FORMAT      = Set.of("add","sub","and","or","xor","sll","srl","sra","slt","sltu");
     private static final Set<String> I_FORMAT_ARITH = Set.of("addi","andi","ori","xori","slti","sltiu","slli","srli","srai");
-    private static final Set<String> I_FORMAT_LOAD  = Set.of("lw","lh","lb","lhu","lbu");
-    private static final Set<String> I_FORMAT_STORE = Set.of("sw","sh","sb");
-    private static final Set<String> I_FORMAT_JUMP  = Set.of("jalr");
+    private static final Set<String> LOAD_FORMAT    = Set.of("lw","lh","lb","lhu","lbu");
+    private static final Set<String> S_FORMAT       = Set.of("sw","sh","sb");
+    private static final Set<String> UJ_FORMAT      = Set.of("jalr");
     private static final Set<String> SB_FORMAT      = Set.of("beq","bne","blt","bge","bltu","bgeu");
 
     public static class ParseException extends RuntimeException {
@@ -102,9 +102,9 @@ public class AssemblyParser {
 
         if      (R_FORMAT.contains(mnemonic))       return decodeR(lineNumber, line, mnemonic, tokens);
         else if (I_FORMAT_ARITH.contains(mnemonic)) return decodeIArith(lineNumber, line, mnemonic, tokens);
-        else if (I_FORMAT_LOAD.contains(mnemonic))  return decodeLoad(lineNumber, line, mnemonic, tokens);
-        else if (I_FORMAT_STORE.contains(mnemonic)) return decodeStore(lineNumber, line, mnemonic, tokens);
-        else if (I_FORMAT_JUMP.contains(mnemonic))  return decodeJalr(lineNumber, line, mnemonic, tokens);
+        else if (LOAD_FORMAT.contains(mnemonic))    return decodeLoad(lineNumber, line, mnemonic, tokens);
+        else if (S_FORMAT.contains(mnemonic))       return decodeStore(lineNumber, line, mnemonic, tokens);
+        else if (UJ_FORMAT.contains(mnemonic))      return decodeJalr(lineNumber, line, mnemonic, tokens);
         else if (SB_FORMAT.contains(mnemonic))      return decodeSB(lineNumber, line, mnemonic, tokens, labelMap, currentIndex);
         else throw new ParseException(lineNumber, "Unknown mnemonic: '" + mnemonic + "'");
     }
@@ -128,7 +128,7 @@ public class AssemblyParser {
     // Tokens after normalisation: [mnemonic, rd, imm, rs1]
     private Instruction decodeLoad(int lineNum, String raw, String mnemonic, String[] tokens) {
         requireTokens(lineNum, tokens, 4);
-        return new Instruction(lineNum, raw, mnemonic, "I",
+        return new Instruction(lineNum, raw, mnemonic, "LOAD",
                 parseRegister(lineNum, tokens[1]),
                 parseRegister(lineNum, tokens[3]),
                 0, parseImmediate(lineNum, tokens[2]));
@@ -137,7 +137,7 @@ public class AssemblyParser {
     // Tokens after normalisation: [mnemonic, rs2, imm, rs1] — rs2 packed into rd field
     private Instruction decodeStore(int lineNum, String raw, String mnemonic, String[] tokens) {
         requireTokens(lineNum, tokens, 4);
-        return new Instruction(lineNum, raw, mnemonic, "S",
+        return new Instruction(lineNum, raw, mnemonic, "S",    // S-format
                 parseRegister(lineNum, tokens[1]),  // rs2 → rd slot
                 parseRegister(lineNum, tokens[3]),
                 0, parseImmediate(lineNum, tokens[2]));
@@ -154,7 +154,7 @@ public class AssemblyParser {
             rs1 = parseRegister(lineNum, tokens[2]);
             imm = parseImmediate(lineNum, tokens[3]);
         }
-        return new Instruction(lineNum, raw, mnemonic, "I", rd, rs1, 0, imm);
+        return new Instruction(lineNum, raw, mnemonic, "UJ", rd, rs1, 0, imm); // UJ-format
     }
 
     private Instruction decodeSB(int lineNum, String raw, String mnemonic, String[] tokens,

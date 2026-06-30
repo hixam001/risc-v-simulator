@@ -16,7 +16,8 @@ public class InstructionExecutor {
             switch (instr.getFormat()) {
                 case "R"  -> executeR(instr.getMnemonic(), instr, state, step);
                 case "SB" -> executeSB(instr.getMnemonic(), instr, state, step);
-                default   -> executeI(instr.getMnemonic(), instr, state, step);
+                case "I", "LOAD", "S", "UJ" -> executeI(instr.getMnemonic(), instr, state, step);
+                default -> throw new IllegalArgumentException("Unknown instruction format: " + instr.getFormat());
             }
         } catch (Exception e) {
             step.setError(e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName());
